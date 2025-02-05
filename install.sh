@@ -140,8 +140,6 @@ sleep 1
 # Ensuring base-devel is installed
 execute_script "00-base.sh"
 sleep 1
-execute_script "pacman.sh"
-sleep 1
 execute_script "yay.sh"
 
 # Install hyprland packages

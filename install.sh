@@ -43,44 +43,6 @@ else
 fi
 
 clear
-
-printf "\n%.0s" {1..3}                            
-echo "   |  _.   |/  _   _  |  o _|_ "
-echo " \_| (_| o |\ (_) (_) |_ |  |_ "
-printf "\n%.0s" {1..2}  
-
-# Welcome message
-echo "$(tput setaf 6)Welcome to JaKooLit's Arch-Hyprland Install Script!$(tput sgr0)"
-echo
-echo "$(tput setaf 166)ATTENTION: Run a full system update and Reboot first!! (Highly Recommended) $(tput sgr0)"
-echo
-echo "$(tput setaf 3)NOTE: You will be required to answer some questions during the installation! $(tput sgr0)"
-echo
-echo "$(tput setaf 3)NOTE: If you are installing on a VM, ensure to enable 3D acceleration else Hyprland wont start! $(tput sgr0)"
-echo
-
-read -p "$(tput setaf 6)Would you like to proceed? (y/n): $(tput sgr0)" proceed
-
-printf "\n%.0s" {1..2}
-
-if [ "$proceed" != "y" ]; then
-    echo "Installation aborted."
-	printf "\n%.0s" {1..2}
-    exit 1
-fi
-
-printf "\n%.0s" {1..2}
-
-echo "$(tput bold)$(tput setaf 166)ATTENTION: Choosing Y on use preset question will install also nvidia stuff! $(tput sgr0)"
-echo "$(tput bold)$(tput setaf 3)CTRL C to cancel and edit the file preset.sh $(tput sgr0)"  
-echo "$(tput bold)$(tput setaf 7)If you are not sure what to do, answer N in here $(tput sgr0)"
-read -p "$(tput setaf 6)Would you like to Use Preset Settings (See note above)? (y/n): $(tput sgr0)" use_preset
-
-# Use of Preset Settings
-if [[ $use_preset = [Yy] ]]; then
-  source ./preset.sh
-fi
-
 # Function to colorize prompts
 colorize_prompt() {
     local color="$1"
@@ -172,30 +134,6 @@ execute_script() {
 }
 
 # Collect user responses to all questions
-printf "\n"
-ask_custom_option "-Type AUR helper" "paru or yay" aur_helper
-printf "\n"
-ask_yes_no "-Do you have any nvidia gpu in your system?" nvidia
-printf "\n"
-ask_yes_no "-Install GTK themes (required for Dark/Light function)?" gtk_themes
-printf "\n"
-ask_yes_no "-Do you want to configure Bluetooth?" bluetooth
-printf "\n"
-ask_yes_no "-Do you want to install Thunar file manager?" thunar
-printf "\n"
-ask_yes_no "-Install AGS (aylur's gtk shell) v1 for Desktop Like Overview?" ags
-printf "\n"
-ask_yes_no "-Install & configure SDDM log-in Manager plus (OPTIONAL) SDDM Theme?" sddm
-printf "\n"
-ask_yes_no "-Install XDG-DESKTOP-PORTAL-HYPRLAND? (For proper Screen Share ie OBS)" xdph
-printf "\n"
-ask_yes_no "-Install zsh, oh-my-zsh & (Optional) pokemon-colorscripts?" zsh
-printf "\n"
-ask_yes_no "-Installing in a Asus ROG Laptops?" rog
-printf "\n"
-ask_yes_no "-Do you want to download pre-configured Hyprland dotfiles?" dots
-printf "\n"
-
 # Ensuring all in the scripts folder are made executable
 chmod +x install-scripts/*
 sleep 1
@@ -204,12 +142,7 @@ execute_script "00-base.sh"
 sleep 1
 execute_script "pacman.sh"
 sleep 1
-# Execute AUR helper script based on user choice
-if [ "$aur_helper" == "paru" ]; then
-    execute_script "paru.sh"
-elif [ "$aur_helper" == "yay" ]; then
-    execute_script "yay.sh"
-fi
+execute_script "yay.sh"
 
 # Install hyprland packages
 execute_script "01-hypr-pkgs.sh"
@@ -221,49 +154,10 @@ execute_script "pipewire.sh"
 execute_script "fonts.sh"
 
 # Install hyprland
-execute_script "hyprland.sh"
-
-if [ "$nvidia" == "Y" ]; then
-    execute_script "nvidia.sh"
-fi
-
-if [ "$gtk_themes" == "Y" ]; then
-    execute_script "gtk_themes.sh"
-fi
-
-if [ "$bluetooth" == "Y" ]; then
-    execute_script "bluetooth.sh"
-fi
-
-if [ "$thunar" == "Y" ]; then
-    execute_script "thunar.sh"
-fi
-if [ "$ags" == "Y" ]; then
-    execute_script "ags.sh"
-fi
-
-if [ "$sddm" == "Y" ]; then
-    execute_script "sddm.sh"
-fi
-
-if [ "$xdph" == "Y" ]; then
-    execute_script "xdph.sh"
-fi
-
-if [ "$zsh" == "Y" ]; then
-    execute_script "zsh.sh"
-fi
 
 execute_script "InputGroup.sh"
 
-if [ "$rog" == "Y" ]; then
-    execute_script "rog.sh"
-fi
-
-if [ "$dots" == "Y" ]; then
-    execute_script "dotfiles-main.sh"
-
-fi
+execute_script "dotfiles-main.sh"
 
 clear
 
@@ -290,9 +184,6 @@ if pacman -Q hyprland &> /dev/null || pacman -Q hyprland-git &> /dev/null; then
 
     # Check if the user answered 'y' or 'Y'
     if [[ "$HYP" =~ ^[Yy]$ ]]; then
-        if [[ "$nvidia" == "Y" ]]; then
-            echo "${NOTE} NVIDIA GPU detected. Rebooting the system..."
-        fi
         systemctl reboot
     fi
 else

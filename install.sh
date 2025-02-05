@@ -152,6 +152,7 @@ execute_script "pipewire.sh"
 execute_script "fonts.sh"
 
 # Install hyprland
+execute_script "hyprland.sh"
 
 execute_script "InputGroup.sh"
 
